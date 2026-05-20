@@ -7,7 +7,7 @@
  * This exercises every module behind bin.ts but not the bin.ts entry point
  * itself (shebang, parseAsync call site).
  */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Command } from "commander";
 import { registerWorkouts } from "./cli/workouts.js";
 
@@ -17,8 +17,7 @@ function makeProgram() {
     .option("--pretty")
     .option("--json")
     .option("--api-key <key>")
-    .option("--timeout <ms>")
-    .option("--verbose");
+    .option("--timeout <ms>");
   return program;
 }
 
@@ -108,5 +107,26 @@ describe("e2e smoke tests", () => {
 
     // exit code must be 4
     expect(process.exitCode).toBe(4);
+  });
+
+  it("AUTH_MISSING when no key configured", async () => {
+    delete process.env.HEVY_API_KEY;
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    const program = makeProgram();
+    registerWorkouts(program, {
+      stdout: (s) => stdout.push(s),
+      stderr: (s) => stderr.push(s),
+      fetchFn: vi.fn(),
+      store: { get: async () => null, set: async () => {}, clear: async () => {} },
+    });
+
+    await program.parseAsync(["node", "hevy", "workouts", "list"]);
+
+    expect(stdout.join("")).toBe("");
+    const err = JSON.parse(stderr.join(""));
+    expect(err.error.code).toBe("AUTH_MISSING");
+    expect(process.exitCode).toBe(2);
   });
 });

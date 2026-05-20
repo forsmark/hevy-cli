@@ -29,8 +29,7 @@ describe("routine-folders list", () => {
     program
       .option("--pretty")
       .option("--api-key <key>")
-      .option("--timeout <ms>")
-      .option("--verbose");
+      .option("--timeout <ms>");
     registerRoutineFolders(program, {
       stdout: (s) => stdout.push(s),
       stderr: (s) => stderr.push(s),

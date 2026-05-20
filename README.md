@@ -112,7 +112,6 @@ npm run hevy -- user info | jq '.name'
 | `--pretty` | Render a human-readable table to stdout instead of JSON |
 | `--api-key <key>` | Override resolved key for this invocation only |
 | `--timeout <ms>` | Request timeout in ms (default 30000) |
-| `--verbose` | Log resolution + request info to stderr (the key is never logged) |
 
 ## Error JSON shape
 

@@ -23,8 +23,7 @@ describe("user info", () => {
     program
       .option("--pretty")
       .option("--api-key <key>")
-      .option("--timeout <ms>")
-      .option("--verbose");
+      .option("--timeout <ms>");
     registerUser(program, {
       stdout: (s) => stdout.push(s),
       stderr: (s) => stderr.push(s),

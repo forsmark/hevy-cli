@@ -32,8 +32,7 @@ describe("workouts list", () => {
     program
       .option("--pretty")
       .option("--api-key <key>")
-      .option("--timeout <ms>")
-      .option("--verbose");
+      .option("--timeout <ms>");
     registerWorkouts(program, {
       stdout: (s) => stdout.push(s),
       stderr: (s) => stderr.push(s),

@@ -19,8 +19,7 @@ program
   .option("--pretty", "human-readable table output instead of JSON")
   .option("--json", "JSON output (default; explicit for clarity)")
   .option("--api-key <key>", "override resolved API key for this invocation")
-  .option("--timeout <ms>", "request timeout in ms (default 30000)")
-  .option("--verbose", "log resolution + request info to stderr");
+  .option("--timeout <ms>", "request timeout in ms (default 30000)");
 
 registerAuth(program);
 registerWorkouts(program);
