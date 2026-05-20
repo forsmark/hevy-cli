@@ -1,6 +1,6 @@
 import type { Command } from "commander";
 import { createHttpClient, type HttpClient } from "../client/http.js";
-import { createTokenStore } from "../auth/token-store.js";
+import { createTokenStore, type TokenStore } from "../auth/token-store.js";
 import { resolveApiKey } from "../auth/resolver.js";
 import { writeData, writeError, type OutputMode } from "../output.js";
 import { exitCodeFor, HevyError } from "../errors.js";
@@ -9,6 +9,7 @@ export interface CliDeps {
   stdout?: (s: string) => void;
   stderr?: (s: string) => void;
   fetchFn?: typeof fetch;
+  store?: TokenStore;
 }
 
 export function outputMode(program: Command): OutputMode {
@@ -30,7 +31,7 @@ export async function runWithHttp<T>(
   const mode = outputMode(opts.program);
   try {
     const flags = opts.program.opts() as { apiKey?: string; timeout?: string };
-    const store = createTokenStore();
+    const store = opts.deps.store ?? createTokenStore();
     const resolved = await resolveApiKey({ flag: flags.apiKey, store });
     if (!resolved.key) {
       throw new HevyError(
