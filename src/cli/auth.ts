@@ -5,8 +5,9 @@ import { resolveApiKey } from "../auth/resolver.js";
 import { maskKey } from "../auth/mask.js";
 import { userClient } from "../client/user.js";
 import { HevyError } from "../errors.js";
-import { writeData, writeError, type OutputMode } from "../output.js";
+import { writeData, writeError } from "../output.js";
 import { exitCodeFor } from "../errors.js";
+import { outputMode } from "./_utils.js";
 
 export interface AuthDeps {
   stdout?: (s: string) => void;
@@ -88,10 +89,6 @@ export function registerAuth(program: Command, deps: AuthDeps = {}): void {
         process.exitCode = err instanceof HevyError ? exitCodeFor(err.code) : 1;
       }
     });
-}
-
-function outputMode(program: Command): OutputMode {
-  return program.opts().pretty ? "pretty" : "json";
 }
 
 async function readKey(
