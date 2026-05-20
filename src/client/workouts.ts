@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { HttpClient } from "./http.js";
 import { workout, workoutEvent, postWorkoutBody } from "../schemas/workout.js";
-import { HevyError } from "../errors.js";
+import { parse } from "./_parse.js";
 
 const listResp = z.object({
   page: z.number().int(),
@@ -16,16 +16,6 @@ const eventsResp = z.object({
   page_count: z.number().int(),
   events: z.array(workoutEvent),
 });
-
-function parse<T>(schema: z.ZodType<T>, data: unknown): T {
-  const r = schema.safeParse(data);
-  if (!r.success) {
-    throw new HevyError("SCHEMA", "Response did not match expected schema", {
-      details: r.error.issues,
-    });
-  }
-  return r.data;
-}
 
 export const workouts = {
   async list(http: HttpClient, args: { page?: number; pageSize?: number } = {}) {
