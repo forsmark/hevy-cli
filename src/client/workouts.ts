@@ -49,7 +49,9 @@ export const workouts = {
   async create(http: HttpClient, body: unknown) {
     const parsed = postWorkoutBody.parse(body);
     const data = await http.request({ method: "POST", path: "/v1/workouts", body: parsed });
-    return parse(workout, data);
+    // API wraps as { workout: [Workout] } with one item.
+    const arr = parse(z.object({ workout: z.array(workout).min(1) }), data).workout;
+    return arr[0]!;
   },
 
   async update(http: HttpClient, workoutId: string, body: unknown) {
@@ -57,6 +59,7 @@ export const workouts = {
     const data = await http.request({
       method: "PUT", path: `/v1/workouts/${workoutId}`, body: parsed,
     });
-    return parse(workout, data);
+    const arr = parse(z.object({ workout: z.array(workout).min(1) }), data).workout;
+    return arr[0]!;
   },
 };

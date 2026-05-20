@@ -85,6 +85,27 @@ export const postRoutineBody = z.object({
 
 export type PostRoutineBody = z.infer<typeof postRoutineBody>;
 
+export const postRoutineBodyExample: PostRoutineBody = {
+  routine: {
+    title: "My Routine",
+    folder_id: null,
+    notes: "",
+    exercises: [
+      {
+        exercise_template_id: "D04AC939",
+        superset_id: null,
+        rest_seconds: 120,
+        notes: "",
+        sets: [
+          { type: "warmup", weight_kg: 40, reps: 5 },
+          { type: "normal", weight_kg: 80, reps: 5 },
+          { type: "normal", weight_kg: 80, reps: 5, rep_range: { start: 5, end: 8 } },
+        ],
+      },
+    ],
+  },
+};
+
 const putRoutineSet = z.object({
   type: z.enum(["warmup", "normal", "failure", "dropset"]).optional(),
   weight_kg: z.number().nullable().optional(),
@@ -118,3 +139,22 @@ export const putRoutineBody = z.object({
 });
 
 export type PutRoutineBody = z.infer<typeof putRoutineBody>;
+
+export const putRoutineBodyExample: PutRoutineBody = {
+  routine: {
+    title: "My Routine (updated)",
+    notes: "",
+    exercises: [
+      {
+        exercise_template_id: "D04AC939",
+        superset_id: null,
+        rest_seconds: 120,
+        notes: "",
+        sets: [
+          { type: "warmup", weight_kg: 40, reps: 5 },
+          { type: "normal", weight_kg: 80, reps: 5 },
+        ],
+      },
+    ],
+  },
+};

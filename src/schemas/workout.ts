@@ -91,3 +91,24 @@ export const postWorkoutBody = z.object({
 });
 
 export type PostWorkoutBody = z.infer<typeof postWorkoutBody>;
+
+export const postWorkoutBodyExample: PostWorkoutBody = {
+  workout: {
+    title: "Morning Workout",
+    description: "",
+    start_time: "2026-05-20T09:00:00Z",
+    end_time: "2026-05-20T10:00:00Z",
+    is_private: false,
+    exercises: [
+      {
+        exercise_template_id: "D04AC939",
+        superset_id: null,
+        notes: "",
+        sets: [
+          { type: "warmup", weight_kg: 40, reps: 5 },
+          { type: "normal", weight_kg: 80, reps: 5 },
+        ],
+      },
+    ],
+  },
+};

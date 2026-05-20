@@ -35,7 +35,7 @@ export const routineFolders = {
       path: "/v1/routine_folders",
       body: parsed,
     });
-    // POST returns bare RoutineFolder per swagger
-    return parse(routineFolder, data);
+    // Swagger says bare RoutineFolder; API actually wraps as { routine_folder: RoutineFolder }.
+    return parse(z.object({ routine_folder: routineFolder }), data).routine_folder;
   },
 };

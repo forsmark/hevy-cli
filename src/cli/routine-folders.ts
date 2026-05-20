@@ -1,7 +1,8 @@
 import { Command } from "commander";
 import { routineFolders } from "../client/routine-folders.js";
 import { runWithHttp, type CliDeps } from "./_utils.js";
-import { readBody } from "./_body.js";
+import { readBody, emitSchema, requireFile } from "./_body.js";
+import { postRoutineFolderBodyExample } from "../schemas/routine-folder.js";
 
 export function registerRoutineFolders(program: Command, deps: CliDeps = {}): void {
   const cmd = program.command("routine-folders").description("routine folders");
@@ -26,8 +27,11 @@ export function registerRoutineFolders(program: Command, deps: CliDeps = {}): vo
 
   cmd
     .command("create")
-    .requiredOption("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--schema", "print a minimal JSON example body and exit")
     .action(async (opts) => {
+      if (opts.schema) return emitSchema(postRoutineFolderBodyExample, deps);
+      if (!requireFile(opts, deps)) return;
       const body = await readBody(opts.file);
       await runWithHttp({ program, tag: "routine-folders.create", deps }, (http) =>
         routineFolders.create(http, body),

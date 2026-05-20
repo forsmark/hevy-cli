@@ -9,9 +9,14 @@ export function registerExerciseTemplates(program: Command, deps: CliDeps = {}):
     .command("list")
     .option("--page <n>", "page number", "1")
     .option("--page-size <n>", "items per page", "5")
+    .option("--name <substring>", "filter by title substring (case-insensitive); auto-paginates")
     .action((opts) =>
       runWithHttp({ program, tag: "exercise-templates.list", deps }, (http) =>
-        exerciseTemplates.list(http, { page: Number(opts.page), pageSize: Number(opts.pageSize) }),
+        exerciseTemplates.list(http, {
+          page: Number(opts.page),
+          pageSize: Number(opts.pageSize),
+          name: opts.name,
+        }),
       ),
     );
 

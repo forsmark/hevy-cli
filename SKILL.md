@@ -33,10 +33,12 @@ npm run hevy -- auth status
 | Workouts changed since a date | `npm run hevy -- workouts events --since 2026-05-01T00:00:00Z` |
 | Log a workout described by the user | Build JSON, then `npm run hevy -- workouts create --file path.json` |
 | Log a workout without a temp file | `echo '{"workout":{…}}' \| npm run hevy -- workouts create --file -` |
+| Get a starter JSON body for any create/update | `npm run hevy -- <resource> create --schema` (also works on `update`) |
 | Show user's routines | `npm run hevy -- routines list` |
 | Create a new routine | `npm run hevy -- routines create --file path.json` |
 | Update a routine | `npm run hevy -- routines update <id> --file path.json` |
 | Browse exercise library | `npm run hevy -- exercise-templates list` |
+| Find an exercise by name | `npm run hevy -- exercise-templates list --name "bench press"` (auto-paginates, filters by title substring) |
 | Lookup exercise progression | `npm run hevy -- exercise-history get <exerciseTemplateId>` |
 | Log a body measurement | `npm run hevy -- body-measurements create --file path.json` |
 | Delete a body measurement | `npm run hevy -- body-measurements delete <date>` |
@@ -62,6 +64,14 @@ and pipe it via stdin to avoid writing a temp file:
 echo '{"workout":{"title":"Push","start_time":"…","end_time":"…","exercises":[]}}' \
   | npm run hevy -- workouts create --file -
 ```
+
+If you don't remember the exact body shape, ask the CLI:
+
+```bash
+npm run hevy -- routines create --schema   # prints a valid example body, no API call
+```
+
+`--schema` is available on every `create` and `update` subcommand.
 
 ## Token resolution order
 

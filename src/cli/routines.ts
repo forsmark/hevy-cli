@@ -1,7 +1,8 @@
 import { Command } from "commander";
 import { routines } from "../client/routines.js";
 import { runWithHttp, type CliDeps } from "./_utils.js";
-import { readBody } from "./_body.js";
+import { readBody, emitSchema, requireFile, requirePositional } from "./_body.js";
+import { postRoutineBodyExample, putRoutineBodyExample } from "../schemas/routine.js";
 
 export function registerRoutines(program: Command, deps: CliDeps = {}): void {
   const cmd = program.command("routines").description("routines");
@@ -26,8 +27,11 @@ export function registerRoutines(program: Command, deps: CliDeps = {}): void {
 
   cmd
     .command("create")
-    .requiredOption("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--schema", "print a minimal JSON example body and exit")
     .action(async (opts) => {
+      if (opts.schema) return emitSchema(postRoutineBodyExample, deps);
+      if (!requireFile(opts, deps)) return;
       const body = await readBody(opts.file);
       await runWithHttp({ program, tag: "routines.create", deps }, (http) =>
         routines.create(http, body),
@@ -35,9 +39,13 @@ export function registerRoutines(program: Command, deps: CliDeps = {}): void {
     });
 
   cmd
-    .command("update <routineId>")
-    .requiredOption("--file <path>", "JSON body file path, or `-` for stdin")
+    .command("update [routineId]")
+    .option("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--schema", "print a minimal JSON example body and exit")
     .action(async (routineId, opts) => {
+      if (opts.schema) return emitSchema(putRoutineBodyExample, deps);
+      if (!routineId) return requirePositional("routineId", deps);
+      if (!requireFile(opts, deps)) return;
       const body = await readBody(opts.file);
       await runWithHttp({ program, tag: "routines.update", deps }, (http) =>
         routines.update(http, routineId, body),

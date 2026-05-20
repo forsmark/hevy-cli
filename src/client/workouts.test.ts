@@ -38,4 +38,23 @@ describe("workouts client", () => {
     const http = ok({ workout_count: "not-a-number" });
     await expect(workouts.count(http)).rejects.toMatchObject({ code: "SCHEMA" });
   });
+
+  it("create unwraps { workout: [Workout] } wrapper from the API", async () => {
+    const sample = {
+      id: "w1", title: "t", description: null,
+      start_time: "2026-05-20T10:00:00Z", end_time: "2026-05-20T11:00:00Z",
+      updated_at: "2026-05-20T11:00:00Z", created_at: "2026-05-20T10:00:00Z",
+      exercises: [],
+    };
+    const http = ok({ workout: [sample] });
+    const r = await workouts.create(http, {
+      workout: {
+        title: "t",
+        start_time: "2026-05-20T10:00:00Z",
+        end_time: "2026-05-20T11:00:00Z",
+        exercises: [{ exercise_template_id: "T", sets: [] }],
+      },
+    });
+    expect(r.id).toBe("w1");
+  });
 });

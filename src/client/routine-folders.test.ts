@@ -38,4 +38,10 @@ describe("routine-folders client", () => {
     const http = ok({ page: "bad", page_count: 1, routine_folders: [] });
     await expect(routineFolders.list(http)).rejects.toMatchObject({ code: "SCHEMA" });
   });
+
+  it("create unwraps { routine_folder: ... } wrapper from the API", async () => {
+    const http = ok({ routine_folder: sampleFolder });
+    const r = await routineFolders.create(http, { routine_folder: { title: "x" } });
+    expect(r.id).toBe(1);
+  });
 });

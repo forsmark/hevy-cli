@@ -30,3 +30,26 @@ export const postBodyMeasurementBody = z.object({
 });
 
 export type PostBodyMeasurementBody = z.infer<typeof postBodyMeasurementBody>;
+
+export const postBodyMeasurementBodyExample: PostBodyMeasurementBody = {
+  body_measurement: {
+    date: "2026-05-20",
+    weight_kg: 80,
+    lean_mass_kg: null,
+    fat_percent: null,
+    neck_cm: null,
+    shoulder_cm: null,
+    chest_cm: null,
+    left_bicep_cm: null,
+    right_bicep_cm: null,
+    left_forearm_cm: null,
+    right_forearm_cm: null,
+    abdomen: null,
+    waist: null,
+    hips: null,
+    left_thigh: null,
+    right_thigh: null,
+    left_calf: null,
+    right_calf: null,
+  },
+};

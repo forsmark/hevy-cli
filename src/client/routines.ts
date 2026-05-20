@@ -30,8 +30,9 @@ export const routines = {
   async create(http: HttpClient, body: unknown) {
     const parsed = postRoutineBody.parse(body);
     const data = await http.request({ method: "POST", path: "/v1/routines", body: parsed });
-    // POST returns bare Routine per swagger
-    return parse(routine, data);
+    // Swagger says bare Routine; API actually wraps as { routine: [Routine] } with one item.
+    const arr = parse(z.object({ routine: z.array(routine).min(1) }), data).routine;
+    return arr[0]!;
   },
 
   async update(http: HttpClient, routineId: string, body: unknown) {
@@ -41,7 +42,8 @@ export const routines = {
       path: `/v1/routines/${routineId}`,
       body: parsed,
     });
-    // PUT returns bare Routine per swagger
-    return parse(routine, data);
+    // Same wrapping quirk as POST.
+    const arr = parse(z.object({ routine: z.array(routine).min(1) }), data).routine;
+    return arr[0]!;
   },
 };

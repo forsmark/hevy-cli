@@ -1,7 +1,8 @@
 import { Command } from "commander";
 import { workouts } from "../client/workouts.js";
 import { runWithHttp, type CliDeps } from "./_utils.js";
-import { readBody } from "./_body.js";
+import { readBody, emitSchema, requireFile, requirePositional } from "./_body.js";
+import { postWorkoutBodyExample } from "../schemas/workout.js";
 
 export function registerWorkouts(program: Command, deps: CliDeps = {}): void {
   const cmd = program.command("workouts").description("workouts");
@@ -47,8 +48,11 @@ export function registerWorkouts(program: Command, deps: CliDeps = {}): void {
 
   cmd
     .command("create")
-    .requiredOption("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--schema", "print a minimal JSON example body and exit")
     .action(async (opts) => {
+      if (opts.schema) return emitSchema(postWorkoutBodyExample, deps);
+      if (!requireFile(opts, deps)) return;
       const body = await readBody(opts.file);
       await runWithHttp({ program, tag: "workouts.create", deps }, (http) =>
         workouts.create(http, body),
@@ -56,9 +60,13 @@ export function registerWorkouts(program: Command, deps: CliDeps = {}): void {
     });
 
   cmd
-    .command("update <workoutId>")
-    .requiredOption("--file <path>", "JSON body file path, or `-` for stdin")
+    .command("update [workoutId]")
+    .option("--file <path>", "JSON body file path, or `-` for stdin")
+    .option("--schema", "print a minimal JSON example body and exit")
     .action(async (workoutId, opts) => {
+      if (opts.schema) return emitSchema(postWorkoutBodyExample, deps);
+      if (!workoutId) return requirePositional("workoutId", deps);
+      if (!requireFile(opts, deps)) return;
       const body = await readBody(opts.file);
       await runWithHttp({ program, tag: "workouts.update", deps }, (http) =>
         workouts.update(http, workoutId, body),

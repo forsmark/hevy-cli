@@ -19,3 +19,9 @@ export const postRoutineFolderBody = z.object({
 });
 
 export type PostRoutineFolderBody = z.infer<typeof postRoutineFolderBody>;
+
+export const postRoutineFolderBodyExample: PostRoutineFolderBody = {
+  routine_folder: {
+    title: "My Folder",
+  },
+};

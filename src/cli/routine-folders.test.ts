@@ -41,3 +41,39 @@ describe("routine-folders list", () => {
     expect(json.routine_folders[0].id).toBe(1);
   });
 });
+
+describe("routine-folders create --schema", () => {
+  it("prints example JSON and makes no API call", async () => {
+    const stdout: string[] = [];
+    const fetchFn = vi.fn();
+    const program = new Command().exitOverride();
+    program.option("--pretty").option("--api-key <key>").option("--timeout <ms>");
+    registerRoutineFolders(program, {
+      stdout: (s) => stdout.push(s),
+      stderr: () => {},
+      fetchFn,
+    });
+    await program.parseAsync(["node", "hevy", "routine-folders", "create", "--schema"]);
+    const json = JSON.parse(stdout.join(""));
+    expect(json.routine_folder.title).toBeDefined();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+
+  it("errors VALIDATION when neither --file nor --schema is provided", async () => {
+    const stderr: string[] = [];
+    const fetchFn = vi.fn();
+    const program = new Command().exitOverride();
+    program.option("--pretty").option("--api-key <key>").option("--timeout <ms>");
+    registerRoutineFolders(program, {
+      stdout: () => {},
+      stderr: (s) => stderr.push(s),
+      fetchFn,
+    });
+    await program.parseAsync(["node", "hevy", "routine-folders", "create"]);
+    const err = JSON.parse(stderr.join(""));
+    expect(err.error.code).toBe("VALIDATION");
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(process.exitCode).toBe(3);
+    process.exitCode = 0;
+  });
+});

@@ -9,7 +9,7 @@ A TypeScript CLI for the [Hevy](https://hevy.com) public API. Designed primarily
 - **Auth check before any command:** run `npm run hevy -- auth status`. Exit code `0` and `reachable: true` = good to go.
 - **Token resolution order:** `--api-key` flag > `HEVY_API_KEY` env > OS keychain.
 - **Exit codes:** 0 success · 1 generic · 2 auth · 3 validation · 4 not found · 5 network · 6 schema drift.
-- **Bodies:** create/update commands take JSON via `--file <path>` or `--file -` (stdin).
+- **Bodies:** create/update commands take JSON via `--file <path>` or `--file -` (stdin). Pass `--schema` to print a minimal example body and exit without calling the API.
 - **User identity:** `hevy user info` returns `{ id, name, url }` — there is no `username` field.
 
 ## Install (local-only)
@@ -50,32 +50,33 @@ npm run hevy -- auth logout
 - `npm run hevy -- workouts get <workoutId>`
 - `npm run hevy -- workouts count`
 - `npm run hevy -- workouts events --since <iso> [--page N] [--page-size N]`
-- `npm run hevy -- workouts create --file <path|->`
-- `npm run hevy -- workouts update <workoutId> --file <path|->`
+- `npm run hevy -- workouts create (--file <path|-> | --schema)`
+- `npm run hevy -- workouts update <workoutId> (--file <path|-> | --schema)`
 
 ### Routines
 
 - `npm run hevy -- routines list [--page N] [--page-size N]`
 - `npm run hevy -- routines get <routineId>`
-- `npm run hevy -- routines create --file <path|->`
-- `npm run hevy -- routines update <routineId> --file <path|->`
+- `npm run hevy -- routines create (--file <path|-> | --schema)`
+- `npm run hevy -- routines update <routineId> (--file <path|-> | --schema)`
 
 ### Routine folders
 
 - `npm run hevy -- routine-folders list [--page N] [--page-size N]`
 - `npm run hevy -- routine-folders get <folderId>`
-- `npm run hevy -- routine-folders create --file <path|->`
+- `npm run hevy -- routine-folders create (--file <path|-> | --schema)`
 
 ### Exercise templates / history
 
-- `npm run hevy -- exercise-templates list [--page N] [--page-size N]`
+- `npm run hevy -- exercise-templates list [--page N] [--page-size N] [--name <substring>]`
+  - `--name` auto-paginates and returns templates whose title contains the substring (case-insensitive).
 - `npm run hevy -- exercise-templates get <exerciseTemplateId>`
 - `npm run hevy -- exercise-history get <exerciseTemplateId> [--page N] [--page-size N]`
 
 ### Body measurements
 
 - `npm run hevy -- body-measurements list [--page N] [--page-size N]`
-- `npm run hevy -- body-measurements create --file <path|->`
+- `npm run hevy -- body-measurements create (--file <path|-> | --schema)`
 - `npm run hevy -- body-measurements delete <date>`
 
 ### User
@@ -100,6 +101,12 @@ npm run hevy -- workouts create --file new-workout.json
 # Log a workout from stdin (no temp file)
 echo '{"workout":{"title":"Push","start_time":"2026-05-20T10:00:00Z","end_time":"2026-05-20T11:00:00Z","exercises":[]}}' \
   | npm run hevy -- workouts create --file -
+
+# Don't remember the JSON shape? Print an example and pipe it back in:
+npm run hevy -- routines create --schema | jq '.routine.title="Push Day"' | npm run hevy -- routines create --file -
+
+# Find an exercise template by name without paging through 226 entries:
+npm run hevy -- exercise-templates list --name "bench press"
 
 # Who is the logged-in user?
 npm run hevy -- user info | jq '.name'

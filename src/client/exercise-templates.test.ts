@@ -39,4 +39,30 @@ describe("exercise-templates client", () => {
     const http = ok({ page: 1, page_count: 1, exercise_templates: "not-an-array" });
     await expect(exerciseTemplates.list(http)).rejects.toMatchObject({ code: "SCHEMA" });
   });
+
+  it("--name filter paginates through all pages and filters by title substring", async () => {
+    const pages = [
+      {
+        page: 1,
+        page_count: 2,
+        exercise_templates: [
+          sampleTemplate,
+          { ...sampleTemplate, id: "X1", title: "Squat (Barbell)" },
+        ],
+      },
+      {
+        page: 2,
+        page_count: 2,
+        exercise_templates: [
+          { ...sampleTemplate, id: "X2", title: "Front Squat" },
+          { ...sampleTemplate, id: "X3", title: "Deadlift" },
+        ],
+      },
+    ];
+    let call = 0;
+    const http = { request: vi.fn(async () => pages[call++]) } as unknown as HttpClient;
+    const r = await exerciseTemplates.list(http, { name: "squat" });
+    expect(r.exercise_templates.map((t) => t.id)).toEqual(["X1", "X2"]);
+    expect((http.request as ReturnType<typeof vi.fn>).mock.calls.length).toBe(2);
+  });
 });

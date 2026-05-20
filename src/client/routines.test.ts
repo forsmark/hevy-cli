@@ -39,4 +39,20 @@ describe("routines client", () => {
     const http = ok({ page: "not-a-number", page_count: 1, routines: [] });
     await expect(routines.list(http)).rejects.toMatchObject({ code: "SCHEMA" });
   });
+
+  it("create unwraps the { routine: [Routine] } array wrapper from the API", async () => {
+    const http = ok({ routine: [sampleRoutine] });
+    const r = await routines.create(http, {
+      routine: { title: "x", exercises: [{ exercise_template_id: "T", sets: [] }] },
+    });
+    expect(r.id).toBe("r1");
+  });
+
+  it("update unwraps the { routine: [Routine] } array wrapper from the API", async () => {
+    const http = ok({ routine: [sampleRoutine] });
+    const r = await routines.update(http, "r1", {
+      routine: { title: "x", exercises: [{ exercise_template_id: "T", sets: [] }] },
+    });
+    expect(r.id).toBe("r1");
+  });
 });
