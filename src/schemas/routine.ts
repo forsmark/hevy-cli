@@ -16,7 +16,7 @@ const routineSet = z
       .optional(),
     distance_meters: z.number().nullable(),
     duration_seconds: z.number().nullable(),
-    rpe: z.number().nullable(),
+    rpe: z.number().nullable().optional(),
     custom_metric: z.number().nullable(),
   })
   .passthrough();
@@ -30,7 +30,7 @@ const routineExercise = z
     rest_seconds: z.number().nullable().optional(),
     notes: z.string().nullable().optional(),
     exercise_template_id: z.string(),
-    supersets_id: z.number().nullable(),
+    supersets_id: z.number().nullable().optional(),
     sets: z.array(routineSet),
   })
   .passthrough();
