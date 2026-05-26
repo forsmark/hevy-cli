@@ -19,7 +19,7 @@ const workoutExercise = z
     title: z.string(),
     notes: z.string().nullable().optional(),
     exercise_template_id: z.string(),
-    supersets_id: z.number().nullable(),
+    supersets_id: z.number().nullable().optional(),
     sets: z.array(workoutSet),
   })
   .passthrough();

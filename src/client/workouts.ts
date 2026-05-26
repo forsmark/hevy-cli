@@ -46,6 +46,16 @@ export const workouts = {
     return parse(eventsResp, data);
   },
 
+  async latest(http: HttpClient) {
+    const data = await http.request({
+      method: "GET",
+      path: "/v1/workouts",
+      query: { page: 1, pageSize: 1 },
+    });
+    const r = parse(listResp, data);
+    return r.workouts[0] ?? null;
+  },
+
   async create(http: HttpClient, body: unknown) {
     const parsed = postWorkoutBody.parse(body);
     const data = await http.request({ method: "POST", path: "/v1/workouts", body: parsed });

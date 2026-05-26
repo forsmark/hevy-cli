@@ -48,6 +48,7 @@ npm run hevy -- auth logout
 
 - `npm run hevy -- workouts list [--page N] [--page-size N]`
 - `npm run hevy -- workouts get <workoutId>`
+- `npm run hevy -- workouts latest` — fetch the most recent workout directly
 - `npm run hevy -- workouts count`
 - `npm run hevy -- workouts events --since <iso> [--page N] [--page-size N]`
 - `npm run hevy -- workouts create (--file <path|-> | --schema)`
@@ -88,6 +89,9 @@ npm run hevy -- auth logout
 ```bash
 # List workout titles
 npm run hevy -- workouts list | jq '.workouts[].title'
+
+# Fetch the most recent workout
+npm run hevy -- workouts latest
 
 # Fetch one workout by id
 npm run hevy -- workouts get $(npm run hevy -- workouts list 2>/dev/null | jq -r '.workouts[0].id')

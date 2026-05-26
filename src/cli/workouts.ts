@@ -26,6 +26,15 @@ export function registerWorkouts(program: Command, deps: CliDeps = {}): void {
     );
 
   cmd
+    .command("latest")
+    .description("fetch the most recent workout")
+    .action(() =>
+      runWithHttp({ program, tag: "workouts.latest", deps }, (http) =>
+        workouts.latest(http),
+      ),
+    );
+
+  cmd
     .command("count")
     .action(() =>
       runWithHttp({ program, tag: "workouts.count", deps }, (http) => workouts.count(http)),
