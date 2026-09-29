@@ -12,6 +12,13 @@ const listResp = z.object({
 // GET /v1/routines/{routineId} returns { routine: Routine } per swagger
 const getResp = z.object({ routine });
 
+// POST/PUT responses have been seen both as { routine: [Routine] } and { routine: Routine }.
+const writeResp = z.object({ routine: z.union([z.array(routine).min(1), routine]) });
+const unwrap = (data: unknown) => {
+  const r = parse(writeResp, data).routine;
+  return Array.isArray(r) ? r[0]! : r;
+};
+
 export const routines = {
   async list(http: HttpClient, args: { page?: number; pageSize?: number } = {}) {
     const data = await http.request({
@@ -30,9 +37,8 @@ export const routines = {
   async create(http: HttpClient, body: unknown) {
     const parsed = postRoutineBody.parse(body);
     const data = await http.request({ method: "POST", path: "/v1/routines", body: parsed });
-    // Swagger says bare Routine; API actually wraps as { routine: [Routine] } with one item.
-    const arr = parse(z.object({ routine: z.array(routine).min(1) }), data).routine;
-    return arr[0]!;
+    // Swagger says bare Routine; API wraps it in { routine }, as an array or an object.
+    return unwrap(data);
   },
 
   async update(http: HttpClient, routineId: string, body: unknown) {
@@ -43,7 +49,6 @@ export const routines = {
       body: parsed,
     });
     // Same wrapping quirk as POST.
-    const arr = parse(z.object({ routine: z.array(routine).min(1) }), data).routine;
-    return arr[0]!;
+    return unwrap(data);
   },
 };
